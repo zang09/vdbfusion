@@ -6,20 +6,22 @@
 import argh
 
 from datasets import CVLabOusterDataset as Dataset
-from vdbfusion_pipeline import VDBFusionPipeline as Pipeline
+from vdbfusion_ch_pipeline import VDBFusionPipeline as Pipeline
 
 
 def main(
-    ouster_scans: str,
-    sequence: int = 0,
-    config: str = "config/cvlab_ouster.yaml",
+    data_name: str,
+    data_path: str = "/Users/zang09/Haebeom/Dataset/CVLAB/",
+    config: str = "/Users/zang09/Haebeom/VScode_ws/vdbfusion/examples/python/config/cvlab_ouster.yaml",
     n_scans: int = -1,
     jump: int = 0,
     visualize: bool = True,
 ):
     """Help here!"""
-    dataset = Dataset(ouster_scans, config)
-    pipeline = Pipeline(dataset, config, jump=jump, n_scans=n_scans, map_name="cvlab_ouster")
+    dataset = Dataset(data_path + data_name, config)
+
+    # Mode: {map_only, make_scan, compare}
+    pipeline = Pipeline(dataset, config, mode="make_scan", jump=jump, n_scans=n_scans, map_name=data_name)
     pipeline.run()
     pipeline.visualize() if visualize else None
 

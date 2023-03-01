@@ -26,6 +26,7 @@
 #include <openvdb/Types.h>
 #include <openvdb/math/DDA.h>
 #include <openvdb/math/Ray.h>
+#include <openvdb/tools/Composite.h>
 #include <openvdb/openvdb.h>
 
 #include <Eigen/Core>
@@ -148,6 +149,20 @@ void VDBVolume::Integrate(const std::vector<Eigen::Vector3d>& points,
     });
 }
 
+void VDBVolume::Compare(openvdb::FloatGrid::Ptr target_grid) {
+    // Save copies of the two grids; CSG operations always modify
+    // the A grid and leave the B grid empty.
+    openvdb::FloatGrid::ConstPtr copy_source = tsdf_->deepCopy();
+    openvdb::FloatGrid::ConstPtr copy_target = target_grid->deepCopy();
+
+    // Compute the difference (A / B) of the two level sets.
+    openvdb::tools::csgDifference(*tsdf_, *target_grid);
+
+    // Restore the original level sets.
+    // tsdf_ = copy_source->deepCopy();
+    // target_grid = copy_target->deepCopy();
+}
+
 openvdb::FloatGrid::Ptr VDBVolume::Prune(float min_weight) const {
     const auto weights = weights_->tree();
     const auto tsdf = tsdf_->tree();
@@ -167,4 +182,5 @@ openvdb::FloatGrid::Ptr VDBVolume::Prune(float min_weight) const {
     });
     return clean_tsdf;
 }
+
 }  // namespace vdbfusion

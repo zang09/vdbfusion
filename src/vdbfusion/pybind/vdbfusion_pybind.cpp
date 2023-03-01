@@ -52,6 +52,8 @@ using namespace py::literals;
 namespace vdbfusion {
 
 PYBIND11_MODULE(vdbfusion_pybind, m) {
+    openvdb::initialize();
+
     auto vector3dvector = pybind_eigen_vector_of_vector<Eigen::Vector3d>(
         m, "_VectorEigen3d", "std::vector<Eigen::Vector3d>",
         py::py_array_to_vectors_double<Eigen::Vector3d>);
@@ -146,6 +148,41 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
                 openvdb::io::File(filename).write({self.tsdf_, self.weights_});
             },
             "filename"_a)
+        .def(
+            "_load_vdb_grids",
+            [](VDBVolume& self, const std::string& filename) {
+                openvdb::io::File file(filename);
+                
+                file.open();
+                openvdb::GridBase::Ptr tsdfGrid;
+                openvdb::GridBase::Ptr weightGrid;
+                for (openvdb::io::File::NameIterator nameIter = file.beginName();
+                    nameIter != file.endName(); ++nameIter)
+                {
+                    // Read in only the grid we are interested in.
+                    if (nameIter.gridName() == "D(x): signed distance grid") {
+                        tsdfGrid = file.readGrid(nameIter.gridName());
+                    } 
+                    else if (nameIter.gridName() == "W(x): weights grid") {
+                        weightGrid = file.readGrid(nameIter.gridName());
+                    }
+                    else {
+                        std::cout << "Skipping grid " << nameIter.gridName() << std::endl;
+                    }
+                }
+                file.close();
+
+                self.tsdf_ = openvdb::gridPtrCast<openvdb::FloatGrid>(tsdfGrid);
+                self.weights_ = openvdb::gridPtrCast<openvdb::FloatGrid>(weightGrid);
+            },
+            "filename"_a)
+        .def(
+            "_compare_vdb_grids",
+            [](VDBVolume& self, openvdb::FloatGrid::Ptr grid) {
+                self.Compare(grid);
+            },
+            "grid"_a)
+
 #ifndef PYOPENVDB_SUPPORT
         .def_property_readonly_static("PYOPENVDB_SUPPORT_ENABLED", [](py::object) { return false; })
 #else
@@ -158,5 +195,4 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
         .def_readwrite("_sdf_trunc", &VDBVolume::sdf_trunc_)
         .def_readwrite("_space_carving", &VDBVolume::space_carving_);
 }
-
 }  // namespace vdbfusion

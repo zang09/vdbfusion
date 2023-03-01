@@ -66,11 +66,15 @@ public:
     openvdb::FloatGrid::Ptr Prune(float min_weight) const;
 
     /// @brief Extracts a TriangleMesh as the iso-surface in the actual volume
+    /// in MarchingCubes.cpp
     [[nodiscard]] std::tuple<std::vector<Eigen::Vector3d>, std::vector<Eigen::Vector3i>>
     ExtractTriangleMesh(bool fill_holes = true, float min_weight = 0.5) const;
 
+    /// @brief Compare SDF value between two scans
+    void Compare(openvdb::FloatGrid::Ptr target_grid);
+
 public:
-    /// OpenVDB Grids modeling the signed distance field and the weight grid
+    /// OpenVDB Grids modeling the 'signed distance field' and the 'weight grid'
     openvdb::FloatGrid::Ptr tsdf_;
     openvdb::FloatGrid::Ptr weights_;
 

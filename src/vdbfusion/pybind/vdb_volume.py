@@ -137,6 +137,7 @@ class VDBVolume:
     ) -> None:
         if weighting_function is not None:
             return self._volume._update_tsdf(sdf, ijk, weighting_function)
+        
         return self._volume._update_tsdf(sdf, ijk)
 
     def extract_triangle_mesh(self, fill_holes: bool = True, min_weight: float = 0.0) -> Tuple:
@@ -161,6 +162,19 @@ class VDBVolume:
         """
         self._volume._extract_vdb_grids(out_file)
 
+    def load_vdb_grids(self, in_file: str) -> None:
+        """For now, write the internal map representation to a file.
+
+        Contains both D(x) and W(x) grids.
+        """
+        print("Path:", in_file)
+        self._volume._load_vdb_grids(in_file)
+
+    def compare_vdb_grids(self, grid) -> None:
+        """Compare two sdf grids
+        """
+        self._volume._compare_vdb_grids(grid)
+    
     def prune(self, min_weight: float):
         """Use the W(x) weights grid to cleanup the generated signed distance field according to a
         minimum weight threshold.
