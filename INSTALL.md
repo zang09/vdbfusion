@@ -30,6 +30,7 @@ git clone https://github.com/PRBonn/vdbfusion.git && cd vdbfusion
 Build OpenVDB from source.
 
 ```sh
+# For Ubuntu
 git clone --depth 1 https://github.com/nachovizzo/openvdb.git -b nacho/vdbfusion \
     && cd openvdb \
     && mkdir build && cd build \
@@ -37,6 +38,21 @@ git clone --depth 1 https://github.com/nachovizzo/openvdb.git -b nacho/vdbfusion
     -DOPENVDB_BUILD_PYTHON_MODULE=ON \
     -DUSE_NUMPY=ON \
     -DPYOPENVDB_INSTALL_DIRECTORY="/usr/local/lib/python3.9/dist-packages" \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+    -DUSE_ZLIB=OFF \
+    ..\
+    && make -j$(nproc) all install \
+    && cd ../.. \
+    && rm -rf /openvdb
+    
+# For MacOS 
+git clone --depth 1 https://github.com/AcademySoftwareFoundation/openvdb.git \
+    && cd openvdb \
+    && mkdir build && cd build \
+    && cmake \
+    -DOPENVDB_BUILD_PYTHON_MODULE=ON \
+    -DUSE_NUMPY=ON \
+    -DPYOPENVDB_INSTALL_DIRECTORY="/Users/${USER}/miniconda3/envs/vdbfusion/lib/python3.9/site-packages" \
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DUSE_ZLIB=OFF \
     ..\
