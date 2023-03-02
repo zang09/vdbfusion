@@ -10,3 +10,5 @@ argh
 scipy
 trimesh
 PyYAML
+opencv-python
+pyquaternion

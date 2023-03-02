@@ -62,8 +62,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libboost-system-dev \
     libeigen3-dev \
     libtbb-dev \
-    python-dev \
-    python-numpy \
+    python3-dev \
+    python3-numpy \
     && rm -rf /var/lib/apt/lists/*
 
 # Install OpenVDB from source, with Python bindings
@@ -78,7 +78,16 @@ RUN git clone --depth 1 https://github.com/nachovizzo/openvdb.git -b nacho/vdbfu
     -DPYOPENVDB_INSTALL_DIRECTORY="/usr/local/lib/python3.8/dist-packages" \
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DUSE_ZLIB=OFF \
-    ..\
-    && make -j$(nproc) all install \
-    && rm -rf /openvdb
+    ..\ 
+    && make all install \
+    && cd ../..
+
+RUN git clone https://github.com/zang09/vdbfusion.git \
+    && cd vdbfusion \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make install \
+    && cd .. && make install \
+    && cd examples/python \ 
+    && pip3 install -r requirements.txt
 
