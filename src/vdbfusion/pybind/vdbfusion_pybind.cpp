@@ -61,6 +61,7 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
     auto vector3ivector = pybind_eigen_vector_of_vector<Eigen::Vector3i>(
         m, "_VectorEigen3i", "std::vector<Eigen::Vector3i>",
         py::py_array_to_vectors_int<Eigen::Vector3i>);
+        
     py::class_<VDBVolume, std::shared_ptr<VDBVolume>> vdb_volume(
         m, "_VDBVolume",
         "This is the low level C++ bindings, all the methods and "
@@ -124,6 +125,12 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
                 self.Integrate(grid, [=](float /*sdf*/) { return weight; });
             },
             "grid"_a, "weight"_a)
+        .def(
+            "_compare_vdb_grids",
+            [](VDBVolume& self, openvdb::FloatGrid::Ptr grid) {
+                self.Compare(grid);
+            },
+            "grid"_a)
 #endif
         .def(
             "_update_tsdf",
@@ -176,12 +183,6 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
                 self.weights_ = openvdb::gridPtrCast<openvdb::FloatGrid>(weightGrid);
             },
             "filename"_a)
-        .def(
-            "_compare_vdb_grids",
-            [](VDBVolume& self, openvdb::FloatGrid::Ptr grid) {
-                self.Compare(grid);
-            },
-            "grid"_a)
 
 #ifndef PYOPENVDB_SUPPORT
         .def_property_readonly_static("PYOPENVDB_SUPPORT_ENABLED", [](py::object) { return false; })

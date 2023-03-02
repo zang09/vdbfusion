@@ -21,7 +21,7 @@ def main(
     dataset = Dataset(data_path + data_name, config)
 
     # Mode: {map_only, make_scan, compare}
-    pipeline = Pipeline(dataset, config, mode="make_scan", jump=jump, n_scans=n_scans, map_name=data_name)
+    pipeline = Pipeline(dataset, config, mode="compare", jump=jump, n_scans=n_scans, map_name=data_name)
     pipeline.run()
     pipeline.visualize() if visualize else None
 

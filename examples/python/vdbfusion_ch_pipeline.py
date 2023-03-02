@@ -101,7 +101,7 @@ class VDBFusionPipeline:
         self._res["times"] = times
 
     def _compare(self):
-        self._tsdf_map.compare_vdb_grids(self._tsdf_volume)
+        self._tsdf_map.compare_vdb_grids(self._tsdf_volume.tsdf)
 
     def _read_vdb(self):
         filename = os.path.join(self._config.out_dir, self._map_name) + "_map.vdb"
