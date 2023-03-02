@@ -62,6 +62,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libboost-system-dev \
     libeigen3-dev \
     libtbb-dev \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgl1-mesa-glx \
     python3-dev \
     python3-numpy \
     && rm -rf /var/lib/apt/lists/*
