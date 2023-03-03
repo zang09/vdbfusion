@@ -10,18 +10,19 @@ from vdbfusion_ch_pipeline import VDBFusionPipeline as Pipeline
 
 
 def main(
-    data_name: str,
-    data_path: str = "/Dataset/CVLAB/",
-    config: str = "/vdbfusion/examples/python/config/cvlab_ouster.yaml",
+    map_name: str,
+    data_path: str = "/Users/zang09/Haebeom/Dataset/CVLAB/",
+    config: str = "/Users/zang09/Haebeom/VScode_ws/vdbfusion/examples/python/config/cvlab_ouster.yaml",
     n_scans: int = -1,
     jump: int = 0,
     visualize: bool = True,
 ):
     """Help here!"""
-    dataset = Dataset(data_path + data_name, config)
+    dataset = Dataset(data_path + map_name, config)
 
     # Mode: {map_only, make_scan, compare}
-    pipeline = Pipeline(dataset, config, mode="compare", jump=jump, n_scans=n_scans, map_name=data_name)
+    data_name = data_path.split('/')[-2]
+    pipeline = Pipeline(dataset, config, mode="make_scan", jump=jump, n_scans=n_scans, map_name=data_name + '_' + map_name)
     pipeline.run()
     pipeline.visualize() if visualize else None
 

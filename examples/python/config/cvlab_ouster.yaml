@@ -24,7 +24,7 @@
 voxel_size: 0.02
 sdf_trunc: 0.06
 space_carving: False
-out_dir: "/vdbfusion/examples/python/results/"
+out_dir: "/Users/zang09/Haebeom/VScode_ws/vdbfusion/examples/python/results/"
 
 # Reconstruction
 fill_holes: False
