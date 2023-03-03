@@ -20,15 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .apollo import ApolloDataset
-from .bunny import BunnyDataset
-from .cow import CowDataset
-from .icl import ICLDataset
-from .kitti_odometry import KITTIOdometryDataset
-from .newer_college import NewerCollegeDataset
-from .cvlab_ouster import CVLabOusterDataset
-from .nuscenes import NuScenesDataset
-from .scannet import ScanNet
-from .flat import FlatDataset
-from .rio import RIODataset
-from .tum import TUMDataset
+# VDBFUSION
+voxel_size: 0.02
+sdf_trunc: 0.06
+space_carving: False
+out_dir: "/Users/zang09/Haebeom/VScode_ws/vdbfusion/examples/python/results/"
+
+# Reconstruction
+fill_holes: True
+min_weight: 5.0
