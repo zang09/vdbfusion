@@ -37,19 +37,15 @@ class VDBFusionPipeline:
     """Abstract class that defines a Pipeline, derived classes must implement the dataset and config
     properties."""
 
-    def __init__(self, dataset, config_file: str, mode: str, map_name: str, jump: int = 0, n_scans: int = -1):
+    def __init__(self, dataset, config_file: str, mode: str, map_name: str, compare_name: str, jump: int = 0, n_scans: int = -1):
         self._dataset = dataset
         self._config = load_config(config_file)
         self._n_scans = len(dataset) if n_scans == -1 else n_scans
         self._jump = jump
-        self._map_name = f"{map_name}_{self._n_scans}"
+        self._map_name = f"{map_name}"
+        self._compare_name = f"{compare_name}"
         self._mode = mode
 
-        self._tsdf_map = VDBVolume(
-            self._config.voxel_size,
-            self._config.sdf_trunc,
-            self._config.space_carving,
-        )
         self._tsdf_volume = VDBVolume(
             self._config.voxel_size,
             self._config.sdf_trunc,
@@ -59,7 +55,13 @@ class VDBFusionPipeline:
 
     def run(self):
         if self._mode == "map_only":
-            self._read_vdb()
+            tsdf_map = VDBVolume(
+                self._config.voxel_size,
+                self._config.sdf_trunc,
+                self._config.space_carving,
+            )
+            self._read_vdb(tsdf_map, self._map_name)
+
         elif self._mode == "make_scan":
             self._run_tsdf_pipeline()
             self._write_ply()
@@ -67,21 +69,32 @@ class VDBFusionPipeline:
             self._write_vdb()
             self._print_tim()
             self._print_metrics()
+
         elif self._mode == "compare":
-            self._read_vdb()
-            self._run_tsdf_pipeline()
-            self._compare()
+            tsdf_map = VDBVolume(
+                self._config.voxel_size,
+                self._config.sdf_trunc,
+                self._config.space_carving,
+            )
+            tsdf_map2 = tsdf_map
+
+            self._read_vdb(tsdf_map, self._map_name)
+            self._read_vdb(tsdf_map2, self._compare_name)
+            self._compare(tsdf_map, tsdf_map2)
+
         else:
             print("Undefined mode!")
 
     def visualize(self):
         if self._mode == "map_only":
             o3d.visualization.draw_geometries([self._res["map"]])
+
         elif self._mode == "make_scan":
             o3d.visualization.draw_geometries([self._res["mesh"]])
+
         elif self._mode == "compare":
-            o3d.visualization.draw_geometries([self._res["map"]])
-            #o3d.visualization.draw_geometries([self._res["mesh"]])
+            o3d.visualization.draw_geometries([self._res["map_diff"]])
+
         else:
             print("Undefined mode!")
 
@@ -100,14 +113,20 @@ class VDBFusionPipeline:
         self._res["mesh"] = self._get_o3d_mesh(self._tsdf_volume, self._config)
         self._res["times"] = times
 
-    def _compare(self):
-        self._tsdf_map.compare_vdb_grids(self._tsdf_volume.tsdf)
+    def _compare(self, volume1, volume2):
+        diff_volume = volume1
+        diff_volume.tsdf = volume1.compare_vdb_grids(volume2.tsdf)
 
-    def _read_vdb(self):
-        filename = os.path.join(self._config.out_dir, self._map_name) + "_map.vdb"
-        self._tsdf_map.load_vdb_grids(filename)
+        self._res["map_diff"] = self._get_o3d_mesh(diff_volume, self._config)
 
-        self._res["map"] = self._get_o3d_mesh(self._tsdf_map, self._config)
+        filename = self._config.out_dir + self._map_name + "-" + self._compare_name.split('_')[-1] + ".ply"
+        o3d.io.write_triangle_mesh(filename, self._res["map_diff"])
+
+    def _read_vdb(self, tsdf_volume, name):
+        filename = os.path.join(self._config.out_dir, name) + ".vdb"
+        tsdf_volume.load_vdb_grids(filename)
+
+        self._res["map"] = self._get_o3d_mesh(tsdf_volume, self._config)
 
     def _write_vdb(self):
         os.makedirs(self._config.out_dir, exist_ok=True)

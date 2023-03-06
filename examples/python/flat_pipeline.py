@@ -11,18 +11,21 @@ from vdbfusion_ch_pipeline import VDBFusionPipeline as Pipeline
 
 def main(
     map_name: str,
-    data_source: str = "/Users/zang09/Haebeom/Dataset/FLAT/",
-    config: str = "/Users/zang09/Haebeom/VScode_ws/vdbfusion/examples/python/config/flat.yaml",
+    compare_name: str = "",
+    data_source: str = "/Dataset/FLAT/",
+    config: str = "/vdbfusion/examples/python/config/flat.yaml",
+    mode: str = "make_scan",
     n_scans: int = -1,
     jump: int = 0,
-    visualize: bool = True,
+    visualize: bool = False,
 ):
     """Help here!"""
     dataset = Dataset(data_source + map_name)
     
     # Mode: {map_only, make_scan, compare}
     data_name = data_source.split('/')[-2]
-    pipeline = Pipeline(dataset, config, mode="make_scan", jump=jump, n_scans=n_scans, map_name=data_name + '_' + map_name)
+    pipeline = Pipeline(dataset, config, mode=mode, jump=jump, n_scans=n_scans, \
+                        map_name=data_name + '_' + map_name, compare_name=data_name + '_' + compare_name)
     pipeline.run()
     pipeline.visualize() if visualize else None
 
