@@ -71,7 +71,7 @@ public:
     ExtractTriangleMesh(bool fill_holes = true, float min_weight = 0.5) const;
 
     /// @brief Compare SDF value between two scans
-    void Compare(openvdb::FloatGrid::Ptr target_grid);
+    openvdb::FloatGrid::Ptr Compare(openvdb::FloatGrid::Ptr target_grid);
 
 public:
     /// OpenVDB Grids modeling the 'signed distance field' and the 'weight grid'

@@ -68,6 +68,7 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
         "constructor defined within this module (starting with a ``_`` "
         "should not be used. Please reffer to the python Procesor class to "
         "check how to use the API");
+
     vdb_volume
         .def(py::init<float, float, bool>(), "voxel_size"_a, "sdf_trunc"_a,
              "space_carving"_a = false)
@@ -125,12 +126,7 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
                 self.Integrate(grid, [=](float /*sdf*/) { return weight; });
             },
             "grid"_a, "weight"_a)
-        .def(
-            "_compare_vdb_grids",
-            [](VDBVolume& self, openvdb::FloatGrid::Ptr grid) {
-                self.Compare(grid);
-            },
-            "grid"_a)
+        .def("_compare_vdb_grids", &VDBVolume::Compare, "grid"_a)
 #endif
         .def(
             "_update_tsdf",

@@ -167,13 +167,13 @@ class VDBVolume:
 
         Contains both D(x) and W(x) grids.
         """
-        print("Path:", in_file)
+        print("Read Path:", in_file)
         self._volume._load_vdb_grids(in_file)
 
-    def compare_vdb_grids(self, grid) -> None:
+    def compare_vdb_grids(self, grid):
         """Compare two sdf grids
         """
-        self._volume._compare_vdb_grids(grid)
+        return self._volume._compare_vdb_grids(grid)
     
     def prune(self, min_weight: float):
         """Use the W(x) weights grid to cleanup the generated signed distance field according to a
