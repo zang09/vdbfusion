@@ -24,8 +24,12 @@
 voxel_size: 0.02
 sdf_trunc: 0.06
 space_carving: False
-out_dir: "/Users/zang09/Haebeom/VScode_ws/vdbfusion/examples/python/results/"
+out_dir: "/vdbfusion/examples/python/results/"
 
 # Reconstruction
 fill_holes: True
 min_weight: 5.0
+
+# Data
+min_range: 'None'
+max_range: 'None'
