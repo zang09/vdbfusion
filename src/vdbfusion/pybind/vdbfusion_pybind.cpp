@@ -126,7 +126,6 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
                 self.Integrate(grid, [=](float /*sdf*/) { return weight; });
             },
             "grid"_a, "weight"_a)
-        .def("_compare_vdb_grids", &VDBVolume::Compare, "grid"_a)
 #endif
         .def(
             "_update_tsdf",
@@ -184,6 +183,7 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
         .def_property_readonly_static("PYOPENVDB_SUPPORT_ENABLED", [](py::object) { return false; })
 #else
         .def_property_readonly_static("PYOPENVDB_SUPPORT_ENABLED", [](py::object) { return true; })
+        .def("_compare_vdb_grids", &VDBVolume::Compare, "grid"_a)
         .def("_prune", &VDBVolume::Prune, "min_weight"_a)
         .def_readwrite("_tsdf", &VDBVolume::tsdf_)
         .def_readwrite("_weights", &VDBVolume::weights_)

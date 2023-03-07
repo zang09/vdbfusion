@@ -170,10 +170,11 @@ class VDBVolume:
         print("Read Path:", in_file)
         self._volume._load_vdb_grids(in_file)
 
-    def compare_vdb_grids(self, grid):
+    def compare_vdb_grids(self, volume):
         """Compare two sdf grids
         """
-        return self._volume._compare_vdb_grids(grid)
+        print("Compare..!")
+        return self._volume._compare_vdb_grids(volume._volume._tsdf)
     
     def prune(self, min_weight: float):
         """Use the W(x) weights grid to cleanup the generated signed distance field according to a

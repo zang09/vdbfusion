@@ -150,19 +150,17 @@ void VDBVolume::Integrate(const std::vector<Eigen::Vector3d>& points,
 }
 
 openvdb::FloatGrid::Ptr VDBVolume::Compare(openvdb::FloatGrid::Ptr target_grid) {
-    // Save copies of the two grids; CSG operations always modify
-    // the A grid and leave the B grid empty.
-    openvdb::FloatGrid::ConstPtr copy_source = tsdf_->deepCopy();
-    openvdb::FloatGrid::ConstPtr copy_target = target_grid->deepCopy();
-
     // Compute the difference (A / B) of the two level sets.
-    openvdb::FloatGrid::Ptr result = openvdb::tools::csgDifferenceCopy(*tsdf_, *target_grid);
+    std::cout << "\n*** Source volume ***" << std::endl;
+    std::cout << *tsdf_ << std::endl;
+    std::cout << "\n*** Target volume ***" << std::endl;
+    std::cout << *target_grid << std::endl;
+    
+    // openvdb::FloatGrid::Ptr result;
+    openvdb::tools::csgDifference(*tsdf_, *target_grid);
 
-    // Restore the original level sets.
-    tsdf_ = copy_source->deepCopy();
-    target_grid = copy_target->deepCopy();
-
-    return result;
+    // TODO: return not work..
+    return tsdf_;
 }
 
 openvdb::FloatGrid::Ptr VDBVolume::Prune(float min_weight) const {

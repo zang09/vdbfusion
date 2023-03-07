@@ -55,12 +55,7 @@ class VDBFusionPipeline:
 
     def run(self):
         if self._mode == "map_only":
-            tsdf_map = VDBVolume(
-                self._config.voxel_size,
-                self._config.sdf_trunc,
-                self._config.space_carving,
-            )
-            self._read_vdb(tsdf_map, self._map_name)
+            self._tsdf_volume = self._read_vdb(self._map_name)
 
         elif self._mode == "make_scan":
             self._run_tsdf_pipeline()
@@ -71,16 +66,10 @@ class VDBFusionPipeline:
             self._print_metrics()
 
         elif self._mode == "compare":
-            tsdf_map = VDBVolume(
-                self._config.voxel_size,
-                self._config.sdf_trunc,
-                self._config.space_carving,
-            )
-            tsdf_map2 = tsdf_map
+            tsdf_map1 = self._read_vdb(self._map_name)
+            tsdf_map2 = self._read_vdb(self._compare_name)
 
-            self._read_vdb(tsdf_map, self._map_name)
-            self._read_vdb(tsdf_map2, self._compare_name)
-            self._compare(tsdf_map, tsdf_map2)
+            self._compare(tsdf_map1, tsdf_map2)
 
         else:
             print("Undefined mode!")
@@ -114,19 +103,26 @@ class VDBFusionPipeline:
         self._res["times"] = times
 
     def _compare(self, volume1, volume2):
-        diff_volume = volume1
-        diff_volume.tsdf = volume1.compare_vdb_grids(volume2.tsdf)
+        volume1.compare_vdb_grids(volume2)
 
-        self._res["map_diff"] = self._get_o3d_mesh(diff_volume, self._config)
+        self._res["map_diff"] = self._get_o3d_mesh(volume1, self._config)
 
-        filename = self._config.out_dir + self._map_name + "-" + self._compare_name.split('_')[-1] + ".ply"
+        filename = self._config.out_dir + self._map_name + "-" + self._compare_name.split('_')[-1] + "_diff.ply"
         o3d.io.write_triangle_mesh(filename, self._res["map_diff"])
 
-    def _read_vdb(self, tsdf_volume, name):
+    def _read_vdb(self, name):
+        tsdf_volume = VDBVolume(
+            self._config.voxel_size,
+            self._config.sdf_trunc,
+            self._config.space_carving,
+        )
+
         filename = os.path.join(self._config.out_dir, name) + ".vdb"
         tsdf_volume.load_vdb_grids(filename)
 
         self._res["map"] = self._get_o3d_mesh(tsdf_volume, self._config)
+        
+        return tsdf_volume
 
     def _write_vdb(self):
         os.makedirs(self._config.out_dir, exist_ok=True)
