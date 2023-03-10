@@ -44,9 +44,10 @@ class VDBVolume:
         self.sdf_trunc = self._volume._sdf_trunc
         self.space_carving = self._volume._space_carving
         self.pyopenvdb_support_enabled = self._volume.PYOPENVDB_SUPPORT_ENABLED
-        if self.pyopenvdb_support_enabled:
-            self.tsdf = self._volume._tsdf
-            self.weights = self._volume._weights
+        # This function is not working both way..!
+        # if self.pyopenvdb_support_enabled:
+        #     self.tsdf = self._volume._tsdf
+        #     self.weights = self._volume._weights
 
     def __repr__(self) -> str:
         return (

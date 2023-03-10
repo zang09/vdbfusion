@@ -150,17 +150,15 @@ void VDBVolume::Integrate(const std::vector<Eigen::Vector3d>& points,
 }
 
 openvdb::FloatGrid::Ptr VDBVolume::Compare(openvdb::FloatGrid::Ptr target_grid) {
-    // Compute the difference (A / B) of the two level sets.
-    std::cout << "\n*** Source volume ***" << std::endl;
-    std::cout << *tsdf_ << std::endl;
-    std::cout << "\n*** Target volume ***" << std::endl;
-    std::cout << *target_grid << std::endl;
+    // // Compute the difference (A / B) of the two level sets.
+    // std::cout << "\n*** Source volume ***" << std::endl;
+    // std::cout << *tsdf_ << std::endl;
+    // std::cout << "\n*** Target volume ***" << std::endl;
+    // std::cout << *target_grid << std::endl;
     
-    // openvdb::FloatGrid::Ptr result;
-    openvdb::tools::csgDifference(*tsdf_, *target_grid);
+    openvdb::FloatGrid::Ptr result = openvdb::tools::csgDifferenceCopy(*tsdf_, *target_grid);
 
-    // TODO: return not work..
-    return tsdf_;
+    return result;
 }
 
 openvdb::FloatGrid::Ptr VDBVolume::Prune(float min_weight) const {

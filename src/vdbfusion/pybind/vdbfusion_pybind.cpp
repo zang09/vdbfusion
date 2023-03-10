@@ -126,6 +126,11 @@ PYBIND11_MODULE(vdbfusion_pybind, m) {
                 self.Integrate(grid, [=](float /*sdf*/) { return weight; });
             },
             "grid"_a, "weight"_a)
+        // .def("_compare_vdb_grids",
+        //     [](VDBVolume& self, openvdb::FloatGrid::Ptr grid) {
+        //         return self.Compare(grid);
+        //     },
+        //     "grid"_a)
 #endif
         .def(
             "_update_tsdf",

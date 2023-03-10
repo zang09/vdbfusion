@@ -57,6 +57,9 @@ class VDBFusionPipeline:
         if self._mode == "map_only":
             self._tsdf_volume = self._read_vdb(self._map_name)
 
+            filename = os.path.join(self._config.out_dir, self._map_name) + "_map.ply"
+            o3d.io.write_triangle_mesh(filename, self._res["map"])
+
         elif self._mode == "make_scan":
             self._run_tsdf_pipeline()
             self._write_ply()
@@ -103,9 +106,10 @@ class VDBFusionPipeline:
         self._res["times"] = times
 
     def _compare(self, volume1, volume2):
-        volume1.compare_vdb_grids(volume2)
+        self._tsdf_volume._volume._tsdf = volume1.compare_vdb_grids(volume2)
+        self._tsdf_volume._volume._weights = volume1._volume._weights
 
-        self._res["map_diff"] = self._get_o3d_mesh(volume1, self._config)
+        self._res["map_diff"] = self._get_o3d_mesh(self._tsdf_volume, self._config)
 
         filename = self._config.out_dir + self._map_name + "-" + self._compare_name.split('_')[-1] + "_diff.ply"
         o3d.io.write_triangle_mesh(filename, self._res["map_diff"])
@@ -162,7 +166,7 @@ class VDBFusionPipeline:
             return
 
         # Compute the dimensions of the volume mapped
-        grid = self._tsdf_volume.tsdf
+        grid = self._tsdf_volume._volume._tsdf
         bbox = grid.evalActiveVoxelBoundingBox()
         dim = np.abs(np.asarray(bbox[1]) - np.asarray(bbox[0]))
         volume_extent = np.ceil(self._config.voxel_size * dim).astype(np.int32)
