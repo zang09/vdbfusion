@@ -156,7 +156,9 @@ openvdb::FloatGrid::Ptr VDBVolume::Compare(openvdb::FloatGrid::Ptr target_grid) 
     // std::cout << "\n*** Target volume ***" << std::endl;
     // std::cout << *target_grid << std::endl;
     
-    openvdb::FloatGrid::Ptr result = openvdb::tools::csgDifferenceCopy(*tsdf_, *target_grid);
+    openvdb::FloatGrid::Ptr intersec = openvdb::tools::csgIntersectionCopy(*tsdf_, *target_grid);
+
+    openvdb::FloatGrid::Ptr result = openvdb::tools::csgDifferenceCopy(*tsdf_, *intersec);
 
     return result;
 }

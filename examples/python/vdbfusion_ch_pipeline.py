@@ -71,8 +71,13 @@ class VDBFusionPipeline:
         elif self._mode == "compare":
             tsdf_map1 = self._read_vdb(self._map_name)
             tsdf_map2 = self._read_vdb(self._compare_name)
-
+            
             self._compare(tsdf_map1, tsdf_map2)
+                        
+            bbox1 = tsdf_map1._volume._tsdf.evalActiveVoxelBoundingBox()
+            bbox2 = tsdf_map2._volume._tsdf.evalActiveVoxelBoundingBox()
+            print(bbox1)
+            print(bbox2)
 
         else:
             print("Undefined mode!")
