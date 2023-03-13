@@ -76,8 +76,8 @@ class VDBFusionPipeline:
                         
             bbox1 = tsdf_map1._volume._tsdf.evalActiveVoxelBoundingBox()
             bbox2 = tsdf_map2._volume._tsdf.evalActiveVoxelBoundingBox()
-            print(bbox1)
-            print(bbox2)
+            print('Map1:', bbox1)
+            print('Map2:', bbox2)
 
         else:
             print("Undefined mode!")
